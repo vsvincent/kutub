@@ -8,6 +8,7 @@ import {
   Button 
 } from '@mui/material'
 import Navbar from './component/navbar'
+import Tiptap from './editor/tiptap'
 
 function Home() {
   return (
@@ -21,6 +22,7 @@ function Home() {
           <Typography variant="body2">
             Bismillah!
           </Typography>
+          <Tiptap />
         </CardContent>
         <CardActions>
           <Button variant="contained" color="primary">

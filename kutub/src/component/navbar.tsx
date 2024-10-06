@@ -1,30 +1,33 @@
 import React from 'react'
-import { Box, Typography, Link, IconButton } from '@mui/material'
+import { Typography, Link, IconButton } from '@mui/material'
 import MenuIcon from '@mui/icons-material/Menu'
+import Grid from '@mui/material/Grid2'
 
 const Navbar = () => {
   return (
-    <Box
-      component="nav"
+    <Grid
+      container
+      spacing={2}
       sx={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
         backgroundColor: 'gray',
         boxShadow: 1,
         px: 2,
         py: 1,
+        alignItems: 'center',
       }}
     >
       {/* Logo */}
-      <Box sx={{ flex: 1 }}>
+      <Grid size={{ xs: 6, md: 4 }}>
         <Typography variant="h6" component="div" fontWeight="bold">
           Logo
         </Typography>
-      </Box>
+      </Grid>
 
       {/* Desktop Links */}
-      <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 2 }}>
+      <Grid
+        size={{ xs: 6, md: 4 }}
+        sx={{ display: { xs: 'none', md: 'flex' }, justifyContent: 'center', gap: 2 }}
+      >
         <Link href="#" color="textPrimary" underline="hover">
           Home
         </Link>
@@ -34,15 +37,18 @@ const Navbar = () => {
         <Link href="#" color="textPrimary" underline="hover">
           Notes
         </Link>
-      </Box>
+      </Grid>
 
       {/* Mobile Menu Button */}
-      <Box sx={{ display: { xs: 'block', md: 'none' } }}>
+      <Grid
+        size={{ xs: 6, md: 4 }}
+        sx={{ display: { xs: 'flex', md: 'none' }, justifyContent: 'flex-end' }}
+      >
         <IconButton aria-label="Open Menu" color="inherit">
           <MenuIcon />
         </IconButton>
-      </Box>
-    </Box>
+      </Grid>
+    </Grid>
   )
 }
 
