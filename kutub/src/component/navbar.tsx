@@ -1,44 +1,48 @@
 import React from 'react'
-import { Flex, Box, Text, Link, IconButton } from '@chakra-ui/react'
+import { Box, Typography, Link, IconButton } from '@mui/material'
+import MenuIcon from '@mui/icons-material/Menu'
 
 const Navbar = () => {
   return (
-    <Flex
-      as="nav"
-      className="bg-gray-500 shadow-md px-4 py-2"
-      align="center"
-      justify="space-between"
+    <Box
+      component="nav"
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        backgroundColor: 'gray',
+        boxShadow: 1,
+        px: 2,
+        py: 1,
+      }}
     >
       {/* Logo */}
-      <Box className="flex-1">
-        <Text className="text-lg font-bold">Logo</Text>
+      <Box sx={{ flex: 1 }}>
+        <Typography variant="h6" component="div" fontWeight="bold">
+          Logo
+        </Typography>
       </Box>
 
       {/* Desktop Links */}
-      <Box className="hidden md:flex space-x-4">
-        <Link href="#" className="text-gray-700 hover:text-gray-900">
+      <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 2 }}>
+        <Link href="#" color="textPrimary" underline="hover">
           Home
         </Link>
-        <Link href="#" className="text-gray-700 hover:text-gray-900">
-          About
+        <Link href="#" color="textPrimary" underline="hover">
+          Reader
         </Link>
-        <Link href="#" className="text-gray-700 hover:text-gray-900">
-          Services
-        </Link>
-        <Link href="#" className="text-gray-700 hover:text-gray-900">
-          Contact
+        <Link href="#" color="textPrimary" underline="hover">
+          Notes
         </Link>
       </Box>
 
       {/* Mobile Menu Button */}
-      <Box className="md:hidden">
-        <IconButton
-          aria-label="Open Menu"
-          variant="outline"
-          className="text-gray-700 hover:bg-gray-100"
-        />
+      <Box sx={{ display: { xs: 'block', md: 'none' } }}>
+        <IconButton aria-label="Open Menu" color="inherit">
+          <MenuIcon />
+        </IconButton>
       </Box>
-    </Flex>
+    </Box>
   )
 }
 

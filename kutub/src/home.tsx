@@ -1,31 +1,32 @@
 import React from 'react'
-import logo from './logo.svg'
 import './app.css'
-import {
-  Card,
-  CardHeader,
-  CardBody,
-  CardFooter,
-  Text,
-  Heading,
-  Button,
-} from '@chakra-ui/react'
+import { 
+  Card, 
+  CardContent, 
+  CardActions, 
+  Typography, 
+  Button 
+} from '@mui/material'
 import Navbar from './component/navbar'
 
 function Home() {
   return (
     <>
       <Navbar />
-      <Card align="center">
-        <CardHeader>
-          <Heading size="md">The Islamic Archive</Heading>
-        </CardHeader>
-        <CardBody>
-          <Text>Bismillah!</Text>
-        </CardBody>
-        <CardFooter>
-          <Button colorScheme="blue">Continue here</Button>
-        </CardFooter>
+      <Card sx={{ textAlign: 'center', maxWidth: 345, margin: '0 auto' }}>
+        <CardContent>
+          <Typography variant="h5" component="div">
+            The Islamic Archive
+          </Typography>
+          <Typography variant="body2">
+            Bismillah!
+          </Typography>
+        </CardContent>
+        <CardActions>
+          <Button variant="contained" color="primary">
+            Continue here
+          </Button>
+        </CardActions>
       </Card>
     </>
   )

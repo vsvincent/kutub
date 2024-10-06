@@ -22,8 +22,6 @@ export default [
       '@stylistic/js/quotes': ['error', 'single'],
       '@stylistic/js/max-len': ['error', 100],
       '@stylistic/js/comma-spacing': ['error'],
-      '@/no-unused-vars': 2,
-      '@/no-var': 2,
       'no-console': 1,
     },
     plugins: {

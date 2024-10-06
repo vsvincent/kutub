@@ -1,14 +1,14 @@
 import React from 'react'
-import logo from './logo.svg'
 import './app.css'
 import Home from './home'
-import { ChakraProvider } from '@chakra-ui/react'
+import { CssBaseline } from '@mui/material'
 
 function App() {
   return (
-    <ChakraProvider>
+    <React.Fragment>
+      <CssBaseline />
       <Home />
-    </ChakraProvider>
+    </React.Fragment>
   )
 }
 
