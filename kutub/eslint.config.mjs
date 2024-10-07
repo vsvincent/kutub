@@ -4,7 +4,6 @@ import eslint from '@eslint/js'
 import tseslintPlugin from '@typescript-eslint/eslint-plugin'
 import tsParser from '@typescript-eslint/parser'
 import pluginReact from 'eslint-plugin-react'
-import pluginPrettier from 'eslint-plugin-prettier'
 import stylisticJs from '@stylistic/eslint-plugin-js'
 
 export default [
@@ -28,8 +27,7 @@ export default [
       react: pluginReact,
       js: eslint,
       ts: tseslintPlugin,
-      prettier: pluginPrettier,
-      '@stylistic/js': stylisticJs
+      '@stylistic/js': stylisticJs,
     },
   },
 ]

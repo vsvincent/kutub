@@ -11,7 +11,7 @@ const Tiptap = () => {
     <EditorProvider extensions={extensions} content={content}>
       <Editor>
         <FloatingMenu editor={null}>This is the floating menu</FloatingMenu>
-        <NoteBubbleMenu  />
+        <NoteBubbleMenu />
       </Editor>
     </EditorProvider>
   )
