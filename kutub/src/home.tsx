@@ -7,30 +7,25 @@ import {
   Typography, 
   Button 
 } from '@mui/material'
-import Navbar from './component/navbar'
-import Tiptap from './editor/tiptap'
-
+import EditorWrapper from './editor/editor-wrapper'
 function Home() {
   return (
-    <>
-      <Navbar />
-      <Card sx={{ textAlign: 'center', maxWidth: 345, margin: '0 auto' }}>
-        <CardContent>
-          <Typography variant="h5" component="div">
-            The Islamic Archive
-          </Typography>
-          <Typography variant="body2">
-            Bismillah!
-          </Typography>
-          <Tiptap />
-        </CardContent>
-        <CardActions>
-          <Button variant="contained" color="primary">
-            Continue here
-          </Button>
-        </CardActions>
-      </Card>
-    </>
+    <Card sx={{ textAlign: 'center', maxWidth: 345, margin: '0 auto' }}>
+      <CardContent>
+        <Typography variant="h5" component="div">
+          The Islamic Archive
+        </Typography>
+        <Typography variant="body2">
+          Bismillah!
+        </Typography>
+        <EditorWrapper content={'content2'} editable={true} />
+      </CardContent>
+      <CardActions>
+        <Button variant="contained" color="primary">
+          Continue here
+        </Button>
+      </CardActions>
+    </Card>
   )
 }
 

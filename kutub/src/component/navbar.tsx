@@ -28,13 +28,13 @@ const Navbar = () => {
         size={{ xs: 6, md: 4 }}
         sx={{ display: { xs: 'none', md: 'flex' }, justifyContent: 'center', gap: 2 }}
       >
-        <Link href="#" color="textPrimary" underline="hover">
+        <Link href="/" color="textPrimary" underline="hover">
           Home
         </Link>
-        <Link href="#" color="textPrimary" underline="hover">
+        <Link href="/reader" color="textPrimary" underline="hover">
           Reader
         </Link>
-        <Link href="#" color="textPrimary" underline="hover">
+        <Link href="/mapper" color="textPrimary" underline="hover">
           Notes
         </Link>
       </Grid>

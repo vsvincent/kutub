@@ -7,14 +7,16 @@ interface TiptapEditorProps {
   extensions?: any;
   content?: string;
   children?: ReactNode;
+  editable?: boolean;
 }
 
 const TiptapEditor: React.FC<TiptapEditorProps>= ({
-  editor: externalEditor, extensions, content, children
+  editor: externalEditor, extensions, content, children, editable
 }) => {
   const inputtedEditor = externalEditor ?? undefined
 
   const currentEditor = useCurrentEditor()
+  console.log('currentEditor', currentEditor)
   const editor = inputtedEditor ?? currentEditor
 
   if (!editor) return null
