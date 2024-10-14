@@ -1,35 +1,29 @@
-import React, { useCallback } from 'react'
 import {
   ReactFlow,
-  type Node,
-  type Edge,
   Background,
   Controls,
   useReactFlow,
   useNodesState,
   useEdgesState,
-  ReactFlowProvider
+  Panel
 } from '@xyflow/react'
 import { Paper } from '@mui/material'
  
 import '@xyflow/react/dist/style.css'
-const getLayoutedElements = (nodes: Node[], edges: Edge[]) => {
-  return { nodes, edges }
-}
-const initialNodes = [
-  { id: '1', position: { x: 0, y: 0 }, data: { label: '1' } },
-  { id: '2', position: { x: 0, y: 100 }, data: { label: '2' } },
-] as Node[]
-const initialEdges = [{ id: 'e1-2', source: '1', target: '2' }] as Edge[]
+import useDagreLayoutedElements from './layout/use-dagre-layouted-elements'
+import { initialNodes, initialEdges } from './consts'
+import { useCallback } from 'react'
 
 export default function NodeMap() {
   const { fitView } = useReactFlow()
+  const { getDagreLayoutedElements } = useDagreLayoutedElements()
+
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes)
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
 
-  const onLayout = useCallback(() => {
-    const layouted = getLayoutedElements(nodes, edges)
-
+  const onLayout = useCallback((direction: string) => {
+    const layouted = getDagreLayoutedElements({ direction })
+    
     setNodes([...layouted.nodes])
     setEdges([...layouted.edges])
 
@@ -37,25 +31,40 @@ export default function NodeMap() {
       fitView()
     })
   }, [nodes, edges])
+
   return (
-    <ReactFlowProvider>
-      <Paper elevation={3} style={{
-        margin: '10px',
-        padding: '20px',
-        height: 'calc(100% - 10px)',
-        width: 'calc(100% - 10px)'
-      }}>
-        <ReactFlow
-          nodes={initialNodes}
-          edges={initialEdges}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          fitView
-        >
-          <Background />
-          <Controls />
-        </ReactFlow>
-      </Paper>
-    </ReactFlowProvider>
+    <Paper elevation={3} style={{
+      margin: '10px',
+      padding: '20px',
+      height: 'calc(100% - 10px)',
+      width: 'calc(100% - 10px)'
+    }}>
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        fitView
+      >
+        <Background />
+        <Controls />
+        <Panel position="top-right">
+          <button
+            onClick={() =>
+              onLayout('TB')
+            }
+          >
+            vertical layout
+          </button>
+          <button
+            onClick={() =>
+              onLayout('LR')
+            }
+          >
+            horizontal layout
+          </button>
+        </Panel>
+      </ReactFlow>
+    </Paper>
   )
 }

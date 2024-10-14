@@ -105,6 +105,9 @@ importers:
       typescript-eslint:
         specifier: ^8.8.0
         version: 8.8.0(eslint@8.57.1)(typescript@4.9.5)
+      web-worker:
+        specifier: ^1.3.0
+        version: 1.3.0
 
 packages:
 
@@ -5972,6 +5975,9 @@ packages:
 
   web-vitals@2.1.4:
     resolution: {integrity: sha512-sVWcwhU5mX6crfI5Vd2dC4qchyTqxV8URinzt25XqVh+bHEPGH4C3NPrNionCP7Obx59wrYEbNlw4Z8sjALzZg==}
+
+  web-worker@1.3.0:
+    resolution: {integrity: sha512-BSR9wyRsy/KOValMgd5kMyr3JzpdeoR9KVId8u5GVlTTAtNChlsE4yTxeY7zMdNSyOmoKBv8NH2qeRY9Tg+IaA==}
 
   webidl-conversions@4.0.2:
     resolution: {integrity: sha512-YQ+BmxuTgd6UXZW3+ICGfyqRyHXVlD5GtQr5+qjiNW7bF0cqrzX500HVXPBOvgXb5YnzDd+h0zqyv61KUD7+Sg==}
@@ -13282,6 +13288,8 @@ snapshots:
       minimalistic-assert: 1.0.1
 
   web-vitals@2.1.4: {}
+
+  web-worker@1.3.0: {}
 
   webidl-conversions@4.0.2: {}
 
