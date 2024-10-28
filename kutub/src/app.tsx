@@ -1,13 +1,16 @@
 import React from 'react'
 import './app.css'
-import Home from './home'
 import { CssBaseline } from '@mui/material'
+import Router from './component/router'
+import PageWrapper from './page-wrapper'
 
 function App() {
   return (
     <React.Fragment>
       <CssBaseline />
-      <Home />
+      <PageWrapper>
+        <Router />
+      </PageWrapper>
     </React.Fragment>
   )
 }
