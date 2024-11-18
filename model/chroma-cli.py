@@ -36,12 +36,11 @@ def main():
     if args.reset:
         clear_database()
     documents = load_documents()
-    print(documents)
-    print(documents)
     chunks = split_documents(documents)
-    #sample_chunks(chunks)
+    for chunk in chunks:
+        chunk.metadata["id"] = str(uuid.uuid4())
     if args.init:
-        db = create_database(documents, openai)
+        db = create_database(chunks, openai)
     else:
         db = get_database()
     db = get_database()
@@ -58,9 +57,9 @@ def load_documents():
     document_loader = PyPDFDirectoryLoader(DATA_PATH)
     documents = []
     for doc in document_loader.lazy_load():
-        doc.id = str(uuid.uuid4())
+        doc.metadata["id"] = str(uuid.uuid4())
         print("Document Loaded")
-        print(doc)
+        print(doc.metadata["id"])
         documents.append(doc)
     return documents
 
@@ -146,10 +145,7 @@ def get_database():
 def create_database(documents, embeddings):
     print("Creating persistent vector store at:", CHROMA_PATH)
     attributes = dir(documents[0])
-    print("Document attributes:", attributes)
-    print ("id", documents[0].id)
-    print("length", len(documents))
-    return Chroma.from_documents(documents, embeddings, CHROMA_PATH, collection_name="test")
+    return Chroma.from_documents(documents, embeddings, persist_directory=CHROMA_PATH, collection_name="test")
 
 def sample_chunks(chunks, n=5):
   print(f"Total chunks: {len(chunks)}")
