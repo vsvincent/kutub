@@ -2,40 +2,49 @@
 import argparse
 import os
 import shutil
-from langchain.document_loaders.pdf import PyPDFDirectoryLoader
+from langchain_community.document_loaders import PyPDFDirectoryLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain.schema.document import Document
+from langchain_openai import OpenAIEmbeddings
 import chromadb.utils.embedding_functions as embedding_functions
-from langchain.vectorstores.chroma import Chroma
+from langchain_community.vectorstores import Chroma
 import pytesseract
 from PIL import Image
 import random
+import uuid
 
 
 CHROMA_PATH = os.getenv("CHROMA_PATH")
 DATA_PATH = "data"
 API_KEY = os.getenv("OPENAI_API_KEY")
+DEFAULT_MODEL = "text-embedding-3-small"
 
 
 def main():
     if not CHROMA_PATH:
       raise ValueError("CHROMA_PATH environment variable is not set.")
+    else:
+        print(f"Using local Chroma path: {CHROMA_PATH}")
     if not API_KEY:
       raise ValueError("API_KEY environment variable is not set.")
+    else:
+        openai = OpenAIEmbeddings(model=DEFAULT_MODEL)
     parser = argparse.ArgumentParser()
     parser.add_argument("--reset", action="store_true", help="Reset the database.")
     parser.add_argument("--init", action="store_true", help="Initialize the database.")
     args = parser.parse_args()
     if args.reset:
         clear_database()
-    if args.init:
-        db = create_database()
-    else:
-        db = get_database()
     documents = load_documents()
     print(documents)
+    print(documents)
     chunks = split_documents(documents)
-    sample_chunks(chunks)
+    #sample_chunks(chunks)
+    if args.init:
+        db = create_database(documents, openai)
+    else:
+        db = get_database()
+    db = get_database()
     add_to_chroma(db, chunks)
 
 def extract_text_from_image(image_path, language='eng'):
@@ -47,7 +56,13 @@ def extract_text_from_image(image_path, language='eng'):
 
 def load_documents():
     document_loader = PyPDFDirectoryLoader(DATA_PATH)
-    return document_loader.load()
+    documents = []
+    for doc in document_loader.lazy_load():
+        doc.id = str(uuid.uuid4())
+        print("Document Loaded")
+        print(doc)
+        documents.append(doc)
+    return documents
 
 
 def split_documents(documents: list[Document]):
@@ -62,7 +77,7 @@ def split_documents(documents: list[Document]):
 def get_embedding_function():
     return embedding_functions.OpenAIEmbeddingFunction(
                 api_key=API_KEY,
-                model_name="text-embedding-3-small"
+                model_name=DEFAULT_MODEL
             )
 
 def add_to_chroma(db: Chroma, chunks: list[Document]):
@@ -126,11 +141,15 @@ def clear_database():
 
 def get_database():
   if os.path.exists(CHROMA_PATH):
-    Chroma(persist_directory=CHROMA_PATH, embedding_function=get_embedding_function())
+    Chroma(persist_directory=CHROMA_PATH, embedding_function=get_embedding_function(), collection_name="test")
 
-def create_database(chunks, embeddings, persist_directory):
-  print("Creating persistent vector store at:", CHROMA_PATH)
-  return Chroma.from_documents(chunks, embeddings, persist_directory)
+def create_database(documents, embeddings):
+    print("Creating persistent vector store at:", CHROMA_PATH)
+    attributes = dir(documents[0])
+    print("Document attributes:", attributes)
+    print ("id", documents[0].id)
+    print("length", len(documents))
+    return Chroma.from_documents(documents, embeddings, CHROMA_PATH, collection_name="test")
 
 def sample_chunks(chunks, n=5):
   print(f"Total chunks: {len(chunks)}")
