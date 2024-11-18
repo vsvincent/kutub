@@ -5,44 +5,38 @@ import shutil
 from langchain.document_loaders.pdf import PyPDFDirectoryLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain.schema.document import Document
-#from get_embedding_function import get_embedding_function
+import chromadb.utils.embedding_functions as embedding_functions
 from langchain.vectorstores.chroma import Chroma
 import pytesseract
 from PIL import Image
+import random
 
 
-CHROMA_PATH = "chroma"
+CHROMA_PATH = os.getenv("CHROMA_PATH")
 DATA_PATH = "data"
+API_KEY = os.getenv("OPENAI_API_KEY")
 
 
 def main():
-
+    if not CHROMA_PATH:
+      raise ValueError("CHROMA_PATH environment variable is not set.")
+    if not API_KEY:
+      raise ValueError("API_KEY environment variable is not set.")
     parser = argparse.ArgumentParser()
     parser.add_argument("--reset", action="store_true", help="Reset the database.")
+    parser.add_argument("--init", action="store_true", help="Initialize the database.")
     args = parser.parse_args()
     if args.reset:
-        confirmationParser = argparse.ArgumentParser()
-        print("Resetting vector store. This will delete all existing data.")
-        confirmationParser.add_argument("--confirm", action="store_true", help="Confirm the reset.")
-        if args.confirm:
-            print("Reset confirmed.")
-            clear_database()
-
+        clear_database()
+    if args.init:
+        db = create_database()
+    else:
+        db = get_database()
     documents = load_documents()
     print(documents)
     chunks = split_documents(documents)
-    print("sample chunks")
-    print("0", chunks[0])
-    print("1", chunks[1])
-    print("2", chunks[2])
-    print("3", chunks[3])
-    print("4", chunks[4])
-    print("5", chunks[5])
-    print("6", chunks[6])
-    print("7", chunks[7])
-    print("8", chunks[8])
-    print("15", chunks[100])
-    #add_to_chroma(chunks)
+    sample_chunks(chunks)
+    add_to_chroma(db, chunks)
 
 def extract_text_from_image(image_path, language='eng'):
         img = Image.open(image_path)
@@ -65,12 +59,13 @@ def split_documents(documents: list[Document]):
     )
     return text_splitter.split_documents(documents)
 
+def get_embedding_function():
+    return embedding_functions.OpenAIEmbeddingFunction(
+                api_key=API_KEY,
+                model_name="text-embedding-3-small"
+            )
 
-def add_to_chroma(chunks: list[Document]):
-    db = Chroma(
-        persist_directory=CHROMA_PATH, embedding_function=get_embedding_function()
-    )
-
+def add_to_chroma(db: Chroma, chunks: list[Document]):
     chunks_with_ids = calculate_chunk_ids(chunks)
 
     existing_items = db.get(include=[])
@@ -83,10 +78,14 @@ def add_to_chroma(chunks: list[Document]):
             new_chunks.append(chunk)
 
     if len(new_chunks):
-        print(f"👉 Adding new documents: {len(new_chunks)}")
-        new_chunk_ids = [chunk.metadata["id"] for chunk in new_chunks]
-        db.add_documents(new_chunks, ids=new_chunk_ids)
-        db.persist()
+        db_confirmation_parser = argparse.ArgumentParser()
+        db_confirmation_parser.add_argument("--confirm", action="store_true", help="Confirm the uploading of new documents to the vector store.")
+        db_confirmation_args = db_confirmation_parser.parse_args()
+        if db_confirmation_args.confirm:
+          print(f"👉 Adding new documents: {len(new_chunks)}")
+          new_chunk_ids = [chunk.metadata["id"] for chunk in new_chunks]
+          db.add_documents(new_chunks, ids=new_chunk_ids)
+          db.persist()
     else:
         print("No new documents to add")
 
@@ -116,9 +115,32 @@ def calculate_chunk_ids(chunks):
 
 
 def clear_database():
+  confirmationParser = argparse.ArgumentParser()
+  print("Resetting vector store. This will delete all existing data.")
+  confirmationParser.add_argument("--confirm", action="store_true", help="Confirm the reset.")
+  confirmation_args = confirmationParser.parse_args()
+  if confirmation_args.confirm:
+    print("Reset confirmed.")
     if os.path.exists(CHROMA_PATH):
-        shutil.rmtree(CHROMA_PATH) 
+      shutil.rmtree(CHROMA_PATH)
 
+def get_database():
+  if os.path.exists(CHROMA_PATH):
+    Chroma(persist_directory=CHROMA_PATH, embedding_function=get_embedding_function())
+
+def create_database(chunks, embeddings, persist_directory):
+  print("Creating persistent vector store at:", CHROMA_PATH)
+  return Chroma.from_documents(chunks, embeddings, persist_directory)
+
+def sample_chunks(chunks, n=5):
+  print(f"Total chunks: {len(chunks)}")
+  print("Sample chunks:")
+  if chunks:
+    sample_indices = random.sample(range(len(chunks)), min(n, len(chunks)))
+    for i in sample_indices:
+      print(f"Sample {i}: {chunks[i]}")
+  else:
+    print("No chunks to display")
 
 if __name__ == "__main__":
     main()
