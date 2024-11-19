@@ -43,8 +43,7 @@ def main():
         db = create_database(chunks, openai)
     else:
         db = get_database()
-    db = get_database()
-    add_to_chroma(db, chunks)
+        add_to_chroma(db, chunks)
 
 def extract_text_from_image(image_path, language='eng'):
         img = Image.open(image_path)
@@ -71,7 +70,8 @@ def split_documents(documents: list[Document]):
         length_function=len,
         is_separator_regex=False,
     )
-    return text_splitter.split_documents(documents)
+    chunks = text_splitter.split_documents(documents)
+    return calculate_chunk_ids(chunks)
 
 def get_embedding_function():
     return embedding_functions.OpenAIEmbeddingFunction(
@@ -80,14 +80,13 @@ def get_embedding_function():
             )
 
 def add_to_chroma(db: Chroma, chunks: list[Document]):
-    chunks_with_ids = calculate_chunk_ids(chunks)
 
     existing_items = db.get(include=[])
     existing_ids = set(existing_items["ids"])
     print(f"Number of existing documents in DB: {len(existing_ids)}")
 
     new_chunks = []
-    for chunk in chunks_with_ids:
+    for chunk in chunks:
         if chunk.metadata["id"] not in existing_ids:
             new_chunks.append(chunk)
 
@@ -99,12 +98,11 @@ def add_to_chroma(db: Chroma, chunks: list[Document]):
           print(f"👉 Adding new documents: {len(new_chunks)}")
           new_chunk_ids = [chunk.metadata["id"] for chunk in new_chunks]
           db.add_documents(new_chunks, ids=new_chunk_ids)
-          db.persist()
     else:
         print("No new documents to add")
 
 
-def calculate_chunk_ids(chunks):
+def calculate_chunk_ids(chunks: list[Document]):
     # Page Source : Page Number : Chunk Index
 
     last_page_id = None
@@ -139,12 +137,13 @@ def clear_database():
       shutil.rmtree(CHROMA_PATH)
 
 def get_database():
-  if os.path.exists(CHROMA_PATH):
-    Chroma(persist_directory=CHROMA_PATH, embedding_function=get_embedding_function(), collection_name="test")
+    if os.path.exists(CHROMA_PATH):
+        return Chroma(persist_directory=CHROMA_PATH, embedding_function=get_embedding_function(), collection_name="test")
+    else:
+        raise FileNotFoundError("Chroma database not found at ${CHROMA_PATH}. Please make sure the directory exists and run cli with --init to create a new database.")
 
 def create_database(documents, embeddings):
     print("Creating persistent vector store at:", CHROMA_PATH)
-    attributes = dir(documents[0])
     return Chroma.from_documents(documents, embeddings, persist_directory=CHROMA_PATH, collection_name="test")
 
 def sample_chunks(chunks, n=5):
@@ -159,5 +158,3 @@ def sample_chunks(chunks, n=5):
 
 if __name__ == "__main__":
     main()
-
-
